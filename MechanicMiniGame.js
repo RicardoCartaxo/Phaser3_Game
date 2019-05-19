@@ -245,8 +245,6 @@ class MechanicMiniGame extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.objective, this.win, null, this);
 
         this.cam.flash(500);
-
-
     }
 
     accident(){
