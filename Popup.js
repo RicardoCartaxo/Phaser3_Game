@@ -45,6 +45,9 @@ class Popup extends Phaser.Scene{
     }
 
     create(){
+
+        this.cam = this.cameras.main;
+
         this.canvasWidth = this.game.canvas.width;
         this.canvasHeight = this.game.canvas.height;
 
@@ -93,7 +96,6 @@ class Popup extends Phaser.Scene{
                     }
                     this.createPlayMiniGameText(gameName);
                     this.createYesButton(toStart);
-                    // resume main game this.toResume
                     this.createNoButton(this.toResume);
 
                 }
@@ -189,8 +191,6 @@ class Popup extends Phaser.Scene{
     }
 
     createNoButton(toResume){
-        console.log(toResume);
-        console.log(Constants.MAINGAME.MAINGAME);
         this.noButton = this.add.text(this.canvasWidth / 2 - 260, this.canvasHeight / 2 + 175, "No", {
             fontFamily: 'arc',
             color: "#ff0000",
@@ -245,7 +245,6 @@ class Popup extends Phaser.Scene{
         });
         this.BPButton.on('pointerover', () => this.buttonHoverState(this.BPButton));
         this.BPButton.on('pointerout', () => this.buttonRestState(this.BPButton));
-
         this.BPButtonText = this.add.text(XStart-25, YStart-10,'DEQ', {
             fontFamily: 'arc',
             color: "#ff0000",
@@ -270,7 +269,7 @@ class Popup extends Phaser.Scene{
     }
 
     createMainGameExitButton(){
-        this.exitButton = this.add.text(this.canvasWidth / 2 - 250, this.canvasHeight / 2 + 175, 'Exit', {
+        this.exitButton = this.add.text(this.canvasWidth / 2 - 250, this.canvasHeight / 2 + 175, 'Exit\nGame', {
             fontFamily: 'arc',
             color: "#ff0000",
             fontSize: "32px"
@@ -333,6 +332,7 @@ class Popup extends Phaser.Scene{
         this.playButton = this.add.image(500, 475, 'play');
         this.playButton.setInteractive();
         this.playButton.on('pointerdown', () => {
+            this.cam.flash(1000);
             this.scene.stop();
             this.scene.launch(this.toResume,{level: this.level, music: this.music, volume: this.volume, ship: this.ship});
         });
@@ -467,86 +467,126 @@ class Popup extends Phaser.Scene{
         let shipXStart = 170;
         let shipXOffset = 120;
 
+        this.shipArr = [false, false, false, false, false, false];
+        this.ships = [this.add.image(shipXStart, shipY, 'ship1'),
+            this.add.image(shipXStart+shipXOffset, shipY, 'ship2'),
+            this.add.image(shipXStart+2*shipXOffset, shipY, 'ship3'),
+            this.add.image(shipXStart+3*shipXOffset, shipY, 'ship4'),
+            this.add.image(shipXStart+4*shipXOffset, shipY, 'ship5'),
+            this.add.image(shipXStart+8, shipY+shipYOffset, 'ship6')
+        ];
+
         console.log("Main GAme Active Status: " + this.scene.isActive(Constants.MAINGAME.MAINGAME));
 
-        this.sh1 = this.add.image(shipXStart, shipY, 'ship1');
-        this.sh1.alpha = 0.5;
-        this.sh1.setInteractive();
-        this.sh1.setScale(0.8);
-        this.sh1.on('pointerdown', () => {
+        //this.sh1 = this.add.image(shipXStart, shipY, 'ship1');
+        this.ships[0].alpha = 0.5;
+        this.ships[0].setInteractive();
+        this.ships[0].setScale(0.8);
+        this.ships[0].on('pointerdown', () => {
             this.ship = 1;
             this.scene.get(Constants.MAINGAME.MAINGAME).setShip(this.ship);
             // Redundancy for security
             localStorage.setItem('ship', JSON.stringify(this.ship));
-            this.sh1.alpha = 1;
+            this.ships[0].alpha = 1;
+            this.shipArr[0] = true;
+            this.resetShipArray(1);
+            this.resetShips();
         });
-        this.sh1.on('pointerover', () => this.shipHoverState(this.sh1));
-        this.sh1.on('pointerout', () => this.shipRestState(this.sh1));
+        this.ships[0].on('pointerover', () => this.shipHoverState(this.ships[0]));
+        this.ships[0].on('pointerout', () => this.shipRestState(this.ships[0], this.shipArr[0]));
 
-        this.sh2 = this.add.image(shipXStart+shipXOffset, shipY, 'ship2');
-        this.sh2.setInteractive();
-        this.sh2.alpha = 0.5;
-        this.sh2.setScale(0.8);
-        this.sh2.on('pointerdown', () => {
+        //this.sh2 = this.add.image(shipXStart+shipXOffset, shipY, 'ship2');
+        this.ships[1].setInteractive();
+        this.ships[1].alpha = 0.5;
+        this.ships[1].setScale(0.8);
+        this.ships[1].on('pointerdown', () => {
             this.ship = 2;
             this.scene.get(Constants.MAINGAME.MAINGAME).setShip(this.ship);
             // Redundancy for security
             localStorage.setItem('ship', JSON.stringify(this.ship));
+            this.ships[1].alpha = 1;
+            this.shipArr[1] = true;
+            this.resetShipArray(2);
+            this.resetShips();
         });
-        this.sh2.on('pointerover', () => this.shipHoverState(this.sh2));
-        this.sh2.on('pointerout', () => this.shipRestState(this.sh2));
+        this.ships[1].on('pointerover', () => this.shipHoverState(this.ships[1]));
+        this.ships[1].on('pointerout', () => this.shipRestState(this.ships[1], this.shipArr[1]));
 
-        this.sh3 = this.add.image(shipXStart+2*shipXOffset, shipY, 'ship3');
-        this.sh3.setInteractive();
-        this.sh3.alpha = 0.5;
-        this.sh3.setScale(0.8);
-        this.sh3.on('pointerdown', () => {
+        //this.sh3 = this.add.image(shipXStart+2*shipXOffset, shipY, 'ship3');
+        this.ships[2].setInteractive();
+        this.ships[2].alpha = 0.5;
+        this.ships[2].setScale(0.8);
+        this.ships[2].on('pointerdown', () => {
             this.ship = 3;
             this.scene.get(Constants.MAINGAME.MAINGAME).setShip(this.ship);
             // Redundancy for security
             localStorage.setItem('ship', JSON.stringify(this.ship));
+            this.ships[2].alpha = 1;
+            this.shipArr[2] = true;
+            this.resetShipArray(3);
+            this.resetShips();
         });
-        this.sh3.on('pointerover', () => this.shipHoverState(this.sh3));
-        this.sh3.on('pointerout', () => this.shipRestState(this.sh3));
+        this.ships[2].on('pointerover', () => this.shipHoverState(this.ships[2]));
+        this.ships[2].on('pointerout', () => this.shipRestState(this.ships[2], this.shipArr[2]));
 
-        this.sh4 = this.add.image(shipXStart+3*shipXOffset, shipY, 'ship4');
-        this.sh4.setInteractive();
-        this.sh4.alpha = 0.5;
-        this.sh4.setScale(0.8);
-        this.sh4.on('pointerdown', () => {
+        //this.sh4 = this.add.image(shipXStart+3*shipXOffset, shipY, 'ship4');
+        this.ships[3].setInteractive();
+        this.ships[3].alpha = 0.5;
+        this.ships[3].setScale(0.8);
+        this.ships[3].on('pointerdown', () => {
             this.ship = 4;
             this.scene.get(Constants.MAINGAME.MAINGAME).setShip(this.ship);
             // Redundancy for security
             localStorage.setItem('ship', JSON.stringify(this.ship));
+            this.ships[3].alpha = 1;
+            this.shipArr[3] = true;
+            this.resetShipArray(4);
+            this.resetShips();
         });
-        this.sh4.on('pointerover', () => this.shipHoverState(this.sh4));
-        this.sh4.on('pointerout', () => this.shipRestState(this.sh4));
+        this.ships[3].on('pointerover', () => this.shipHoverState(this.ships[3]));
+        this.ships[3].on('pointerout', () => this.shipRestState(this.ships[3], this.shipArr[3]));
 
-        this.sh5 = this.add.image(shipXStart+4*shipXOffset, shipY, 'ship5');
-        this.sh5.setInteractive();
-        this.sh5.alpha = 0.5;
-        this.sh5.setScale(0.8);
-        this.sh5.on('pointerdown', () => {
+        //this.sh5 = this.add.image(shipXStart+4*shipXOffset, shipY, 'ship5');
+        this.ships[4].setInteractive();
+        this.ships[4].alpha = 0.5;
+        this.ships[4].setScale(0.8);
+        this.ships[4].on('pointerdown', () => {
             this.ship = 5;
             this.scene.get(Constants.MAINGAME.MAINGAME).setShip(this.ship);
             // Redundancy for security
             localStorage.setItem('ship', JSON.stringify(this.ship));
+            this.ships[4].alpha = 1;
+            this.shipArr[4] = true;
+            this.resetShipArray(5);
+            this.resetShips();
         });
-        this.sh5.on('pointerover', () => this.shipHoverState(this.sh5));
-        this.sh5.on('pointerout', () => this.shipRestState(this.sh5));
+        this.ships[4].on('pointerover', () => this.shipHoverState(this.ships[4]));
+        this.ships[4].on('pointerout', () => this.shipRestState(this.ships[4], this.shipArr[4]));
 
-        this.sh6 = this.add.image(shipXStart+8, shipY+shipYOffset, 'ship6');
-        this.sh6.setInteractive();
-        this.sh6.alpha = 0.5;
-        this.sh6.setScale(0.8);
-        this.sh6.on('pointerdown', () => {
+        //this.ships[5] = this.add.image(shipXStart+8, shipY+shipYOffset, 'ship6');
+        this.ships[5].setInteractive();
+        this.ships[5].alpha = 0.5;
+        this.ships[5].setScale(0.8);
+        this.ships[5].on('pointerdown', () => {
             this.ship = 6;
             this.scene.get(Constants.MAINGAME.MAINGAME).setShip(this.ship);
             // Redundancy for security
             localStorage.setItem('ship', JSON.stringify(this.ship));
+            this.ships[5].alpha = 1;
+            this.shipArr[5] = true;
+            this.resetShipArray(6);
+            this.resetShips();
         });
-        this.sh6.on('pointerover', () => this.shipHoverState(this.sh6));
-        this.sh6.on('pointerout', () => this.shipRestState(this.sh6));
+        this.ships[5].on('pointerover', () => this.shipHoverState(this.ships[5]));
+        this.ships[5].on('pointerout', () => this.shipRestState(this.ships[5], this.shipArr[5]));
+    }
+
+    resetShips(){
+        for(var i = 0; i < this.shipArr.length; i++){
+            if(this.shipArr[i] === false){
+                this.ships[i].alpha = 0.5;
+            }
+        }
     }
 
     exitHoverState(text) {
@@ -584,8 +624,24 @@ class Popup extends Phaser.Scene{
     shipHoverState(ship) {
         ship.alpha = 1;
     }
-    shipRestState(ship) {
-        ship.alpha = 0.5;
+    shipRestState(ship, chosen) {
+        if(!chosen){
+            ship.alpha = 0.5;
+        }
+    }
+
+    resetShipArray(chosen){
+        for(let i = 0; i < this.shipArr.length; i++) {
+            if((i + 1) !== chosen){
+                this.shipArr[i] = false;
+            }else{
+                this.shipArr[i] = true;
+            }
+        }
+    }
+
+    chosenShipReset(){
+
     }
 
     stopMainGameMusic(){

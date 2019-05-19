@@ -6,7 +6,7 @@ class MainMenu extends Phaser.Scene{
 
     init(data){
         // CONTROL WHETER DATA MUSIC IS NULL, IF SO MUSIC = TRUE, ELSE MUSIC = DATA.MUSIC
-        this.music = data.music  || false;
+        this.music = data.music  || true;
         this.volume = true;
     }
 

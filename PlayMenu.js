@@ -43,7 +43,7 @@ class PlayMenu extends Phaser.Scene{
         this.loadButton.setInteractive();
         this.loadButton.on('pointerdown', () => {
             //Starting Saved Game
-            if(localStorage.length != 0) {
+            if(localStorage.length !== 0) {
                 this.scene.get(Constants.MUSIC.MENUMUSIC).pauseMusic(true);
                 this.scene.stop(Constants.MUSIC.MENUMUSIC);
                 this.scene.stop(Constants.MAINMENU.MAINMENU);
