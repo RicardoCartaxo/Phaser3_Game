@@ -9,7 +9,6 @@ class MechanicMiniGame extends Phaser.Scene {
         this._level = this.mechanicLvl = parseInt(localStorage.getItem("MechanicMiniGame")) || 1;
         this.initLevel(this._level);
 
-
         // Initializing array to hold car object/img keys
         this.carKeyArr = [];
         // Initializing array to hold actual car objects
