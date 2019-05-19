@@ -11,7 +11,6 @@ class HelpMenu extends Phaser.Scene{
         this.yOffset = 40;
     }
 
-    //Usado para load of ficheiros imagem, video, music, etc
     preload ()
     {
         this.load.image('menu', './assets/MenuAssets/mmbg.png');
@@ -49,13 +48,4 @@ class HelpMenu extends Phaser.Scene{
         button.scaleX = 1;
         button.scaleY= 1;
     }
-
-
-
-    // Main Loop
-    update (delta)
-    {
-    }
-
-
 }

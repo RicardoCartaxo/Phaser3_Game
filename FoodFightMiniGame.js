@@ -1,16 +1,10 @@
 class FoodFightMiniGame extends Phaser.Scene {
 
-    //Bug to fix: if holding down A or D and pause, when we resume the player keeps moving on -.-
-    //ADD popup when we passed level, with continue which will start next level
-    //Add limit time and goal score, if it's reached then next level
-
-    //this.events.addEventListener("");
-
     constructor() {
         super({key: Constants.GAMES.FOODFIGHT});
     }
 
-    //Retrieving Data
+    // Retrieving Data
     init(data) {
         this.volume = this.scene.get(Constants.MAINMENU.MAINMENU).getVolume();
         this.music = this.scene.get(Constants.MAINMENU.MAINMENU).getMusic();
@@ -20,19 +14,15 @@ class FoodFightMiniGame extends Phaser.Scene {
     }
 
     preload(){
-        //Food Images
+        // Food Images
         this.load.image('food1', './assets/FoodFightAssets/food1.png');
         this.load.image('food2', './assets/FoodFightAssets/food2.png');
         this.load.image('food3', './assets/FoodFightAssets/food3.png');
 
-
-        //Background Image
+        // Bg
         this.load.image('bg', './assets/FoodFightAssets/bg.jpg' );
 
-        //Heart Image
-        this.load.image('heart', './assets/FoodFightAssets/heart.png' );
-
-        //Player Spritesheet
+        // Player Spritesheet
         this.load.spritesheet('cat', './assets/PlayerAssets/cat_fighter_sprite2.png',{
             frameWidth : 50,
             frameHeight : 50,
@@ -109,20 +99,19 @@ class FoodFightMiniGame extends Phaser.Scene {
         this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.key_Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
-
         // SCORE
         this.scoreText = 0;
         // FOOD
         this.foodArr = [];
 
-        //Creating food Items based on level player is in
+        // Creating food Items based on level player is in
         for(let o = 0; o < this._amountOfFood; o++) {
             let food1b = new Food(this, this.canvasWidth, -1*this.getRandomInt(60), this.getRandomFoodKey());
             let food1a = new Food_S(this,this.getRandomInt(this.canvasWidth), food1b.y, food1b.key);
             this.foodArr.push(food1a);
         }
 
-        //Adding food items to physics group
+        // Adding food items to physics group
         this.foods = this.physics.add.group();
         for(let k = 0; k < this.foodArr.length; k++){
             this.foods.add(this.foodArr[k]);
@@ -138,21 +127,19 @@ class FoodFightMiniGame extends Phaser.Scene {
         // CAM EFFECT
         this.cam.flash(500);
 
-        // TIME TEXT
+        // TIMER TEXT
         this.timeText = this.add.text(5,50,'Elapsed Time: ' + 0, {
             fontFamily: 'arc',
             color: "#ff0000",
             fontSize: "16px"
         });
-
-        this.max_timeText = this.add.text(5,70, 'Max Time: ' + this._maxTimeText, {
+        this.add.text(5,70, 'Max Time: ' + this._maxTimeText, {
             fontFamily: 'arc',
                 color: "#ffffff",
                 fontSize: "16px"
         });
 
     }
-
 
     update (time, delta)
     {
@@ -166,12 +153,12 @@ class FoodFightMiniGame extends Phaser.Scene {
         this.scoreText.setVisible(true);
 
 
-        //Moves each food item in food array
+        // Moves each food item in food array
         for(let k = 0; k < this.foodArr.length; k++) {
             this.moveFood(this.foodArr[k], k);
         }
 
-        //PlayerHorizontalMovement
+        // PlayerHorizontalMovement
         if(this.key_A.isDown || this.key_Left.isDown){
             if(this.player.x > 5) {
                 this.player.anims.play('left', true);
@@ -193,7 +180,7 @@ class FoodFightMiniGame extends Phaser.Scene {
             this.player.anims.play('idle', true);
         }
 
-        //Updates score text
+        // Updates score text
         this.scoreText.setText("Score " + this._scoreAmount);
 
     }
@@ -253,7 +240,7 @@ class FoodFightMiniGame extends Phaser.Scene {
 
 
 
-    //When player hits a food item, we disable the foodItem body and increment score
+    // When player hits a food item, we disable the foodItem body and increment score
     hitFood (player, foody)
     {
         this._scoreAmount++;
@@ -262,19 +249,19 @@ class FoodFightMiniGame extends Phaser.Scene {
 
     }
 
-    //Generates random keys for food items
+    // Generates random keys for food items
     getRandomFoodKey() {
         var foodsArray = ['food1','food2','food3'];
         var random = Math.floor(Math.random()*foodsArray.length);
         return foodsArray[random];
     }
 
-    //Generates random integer between 0 and canvas width
+    // Generates random integer between 0 and canvas width
     getRandomInt() {
         return Math.floor(Math.random() * Math.floor(this.canvasWidth));
     }
 
-    //Moves food item by changing it's y coordinate and resets if (y > canvas height)
+    // Moves food item by changing it's y coordinate and resets if (y > canvas height)
     moveFood(food){
         food.y += this.foodSpeed;
         if (food.y > this.canvasHeight) {
@@ -282,7 +269,7 @@ class FoodFightMiniGame extends Phaser.Scene {
             this.resetFoodPosition(food);
         }
     }
-    //Resets food item to the top of the screen and enables it's body again
+    // Resets food item to the top of the screen and enables it's body again
     resetFoodPosition(food){
         // put the ship on the top
         var randomY = -1*this.getRandomInt(80);

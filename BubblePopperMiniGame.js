@@ -63,7 +63,6 @@ class BubblePopperMiniGame extends Phaser.Scene {
         return this._initSpeed;
     }
 
-
     preload(){
         //Background Image
         this.load.image('bg', './assets/FoodFightAssets/bg.jpg' );
@@ -79,10 +78,6 @@ class BubblePopperMiniGame extends Phaser.Scene {
         this.load.image('a5', './assets/BubblePopperAssets/iron.png');
         this.load.image('a6', './assets/BubblePopperAssets/lithium.png');
         this.load.image('a7', './assets/BubblePopperAssets/oxygen.png');
-
-
-
-
     }
 
     create(){
@@ -166,7 +161,7 @@ class BubblePopperMiniGame extends Phaser.Scene {
             this._score++;
         }
         if(this.volume) {
-            this.popSound.play();
+            this.popSound.play({volume: 0.25});
         }
 
         this.bubbles = this.bubbles.filter(b => b!==bubbleP);
@@ -185,8 +180,6 @@ class BubblePopperMiniGame extends Phaser.Scene {
             onComplete: () => bubbleP.destroy()
         });
     }
-
-
 
     randomColor() {
         var elements = ['a1','a2','a3','a4','a5','a6','a7'];
@@ -227,6 +220,4 @@ class BubblePopperMiniGame extends Phaser.Scene {
             }
         }
     }
-
-
 }

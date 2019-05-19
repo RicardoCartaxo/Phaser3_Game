@@ -43,10 +43,8 @@ class MainMenu extends Phaser.Scene{
     }
 
 
-
     create ()
     {
-
         if(!this.scene.isActive(Constants.MUSIC.MENUMUSIC)) {
             this.scene.launch(Constants.MUSIC.MENUMUSIC, {music: this.music});
         }
@@ -107,6 +105,7 @@ class MainMenu extends Phaser.Scene{
         this.optionsButton.on('pointerover', () => this.buttonHoverState(this.optionsButton) );
         this.optionsButton.on('pointerout', () => this.buttonRestState(this.optionsButton) );
 
+        // GAME TITLE
         this.title = this.add.text(50, 20, 'POLO 2:\nA Mini Game',{
             fontFamily: 'arc',
             color: "#000000",

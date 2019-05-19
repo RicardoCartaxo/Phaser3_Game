@@ -11,7 +11,6 @@ class GamesMusic extends Phaser.Scene{
         console.log("GamesMusic init()");
     }
 
-    //Loading files
     preload ()
     {   this.load.audio('FFmusic', ['./assets/FoodFightAssets/music/song.ogg', './assets/FoodFightAssets/music/song.ogg']);
         this.load.audio('BPmusic', ['./assets/BubblePopperAssets/music/song.ogg', './assets/BubblePopperAssets/music/song.ogg']);

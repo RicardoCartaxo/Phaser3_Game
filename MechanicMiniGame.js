@@ -6,25 +6,26 @@ class MechanicMiniGame extends Phaser.Scene {
     }
 
     init(data){
-        //console.log("local Storage: " + localStorage.getItem("MechanicMiniGame"));
         this._level = this.mechanicLvl = parseInt(localStorage.getItem("MechanicMiniGame")) || 1;
-
         this.initLevel(this._level);
 
 
-        //Initializing array to hold car object/img keys
+        // Initializing array to hold car object/img keys
         this.carKeyArr = [];
-        //Initializing array to hold actual car objects
+        // Initializing array to hold actual car objects
         this.carArr = [];
-        //Initializing integer array to hold count values
+        // Initializing integer array to hold count values
         this.carrArrValues = [];
+        this.carSpeeds = [];
 
-        //Stopping Menu Music
+        // Stopping Menu Music
         this.scene.get(Constants.MUSIC.MENUMUSIC).pauseMusic(false);
 
-        //Getting volume and music parameters
+        // Getting volume and music parameters
         this.volume = this.scene.get(Constants.MAINMENU.MAINMENU).getVolume();
         this.music = this.scene.get(Constants.MAINMENU.MAINMENU).getMusic();
+
+        this.canFinish = true;
 
     }
 
@@ -34,31 +35,37 @@ class MechanicMiniGame extends Phaser.Scene {
                 this._AmountOfCars = 3;
                 this._PlayerSpeed = 10;
                 this._CarSpeed = 4;
+                this._CarMaxSpeed = 8;
                 break;
             case 2:
                 this._AmountOfCars = 3;
                 this._PlayerSpeed = 10;
                 this._CarSpeed = 5;
+                this._CarMaxSpeed = 10;
                 break;
             case 3:
                 this._AmountOfCars = 4;
                 this._PlayerSpeed = 10;
                 this._CarSpeed = 5;
+                this._CarMaxSpeed = 12;
                 break;
             case 4:
                 this._AmountOfCars = 5;
                 this._PlayerSpeed = 10;
                 this._CarSpeed = 5;
+                this._CarMaxSpeed = 14;
                 break;
             case 5:
                 this._AmountOfCars = 5;
                 this._PlayerSpeed = 10;
                 this._CarSpeed = 6;
+                this._CarMaxSpeed = 16;
                 break;
             default:
-                this._AmountOfCars = 5;
+                this._AmountOfCars = 6;
                 this._PlayerSpeed = 10;
                 this._CarSpeed = 7;
+                this._CarMaxSpeed = 16+this._level;
                 break;
         }
 
@@ -66,21 +73,21 @@ class MechanicMiniGame extends Phaser.Scene {
     }
 
     preload(){
-        //Loading Road Image
+        // Loading Road Image
         this.load.image('road', './assets/MechanicAssets/road.png');
 
+        this.load.audio('scream', './assets/MechanicAssets/sounds/scream.mp3');
 
-
-        //Loading Finish Line Image
+        // Loading Finish Line Image
         this.load.image('obj','./assets/MechanicAssets/finish.jpg');
 
-        //Loading Cars
+        // Loading Cars
         for(var k = 1; k < 5; k++) {
             this.load.image('car' + k, './assets/MechanicAssets/car' + k + '.png');
             this.carKeyArr.push('car' + k);
         }
 
-        //Loading Player Spritesheet
+        // Loading Player Spritesheet
         this.load.spritesheet('cat', './assets/PlayerAssets/cat_fighter_sprite2.png',{
             frameWidth : 50,
             frameHeight : 50,
@@ -93,23 +100,26 @@ class MechanicMiniGame extends Phaser.Scene {
 
     create() {
 
+        for(var i = 0; i < 6; i++){
+            this.carSpeeds[i] = this._CarSpeed;
+        }
+
+        this.timer = this.time.addEvent({
+            delay: 500,
+            loop: true,
+            callback: () => {
+                this._CarSpeed = Math.random() * (this._CarMaxSpeed - this._CarSpeed) + this._CarSpeed;
+                for(var i = 0; i < 6; i++){
+                    this.carSpeeds[i] = Math.random() * (this._CarMaxSpeed - this._CarSpeed) + this._CarSpeed;
+                }
+        },});
+
         // MUSIC
         this.callMusic();
+        // SOUND
+        this.screamSound = this.sound.add('scream');
         // MAIN CAMERA
         this.cam = this.cameras.main;
-
-
-        this.events.on("resume", ()=>{
-            //console.log("hi from resume");
-        });
-        this.events.on("pause", ()=>{
-           //console.log("paused");
-        });
-
-        //timer event hmmm, use it to sort of randomize car speeds in between some interval
-        //to make the game harder
-        //this.time.addEvent();
-
 
         // CANVAS DIMENSIONS
         this.canvasWidth = this.game.canvas.width;
@@ -119,8 +129,6 @@ class MechanicMiniGame extends Phaser.Scene {
         this.add.image(this.canvasWidth/2,this.canvasHeight/2,'road');
         //Adding finish line image
         this.obj = this.physics.add.image(100,20, 'obj');
-
-
 
         // PLAYER
         this.player = this.physics.add.sprite(this.canvasWidth/2, this.canvasHeight, 'cat');
@@ -206,7 +214,7 @@ class MechanicMiniGame extends Phaser.Scene {
         let initialY = 20;
         for(var i = 0; i < this._AmountOfCars; i++){
             let initX;
-            //Cars come from left and right
+            // Cars come from left and right
             if(i % 2 === 0){
                 initX = initialXr;
                 this.carrArrValues.push(0);
@@ -217,6 +225,7 @@ class MechanicMiniGame extends Phaser.Scene {
             var carImg = new Car(this, initX,initialY,this.getRandomCarKey());
             var carBody = this.physics.add.image(carImg.getX(),carImg.getY(), carImg.getKey());
             carBody.setScale(0.2);
+            carBody.setCircle(100,0,0);
             carBody.angle = 90;
             this.carArr.push(carBody);
             initialY += 100;
@@ -241,14 +250,29 @@ class MechanicMiniGame extends Phaser.Scene {
     }
 
     accident(){
-        this.scene.pause();
-        this.scene.launch(Constants.POPUP.POPUP, {key: Constants.GAMES.MECHANIC, level: this._level, state: Constants.STATES.GAMEOVER})
+        this.canFinish = false;
+        this.screamSound.play({volume: 0.2});
+        this.cam.flash(300,255,0,0);
+        this.cam.shake(300,0.05,false, (camera) => {
+            if(camera.shakeEffect.progress === 1)
+
+                this.scene.pause();
+                this.scene.launch(Constants.POPUP.POPUP, {key: Constants.GAMES.MECHANIC, level: this._level, state: Constants.STATES.GAMEOVER});
+        });
+
     }
+
     win(){
-        this._level++;
-        this.scene.pause();
-        localStorage.setItem("MechanicMiniGame", JSON.stringify(this._level));
-        this.scene.launch(Constants.POPUP.POPUP, {key: Constants.GAMES.MECHANIC, level: this._level, state: Constants.STATES.NEXTLEVEL})
+        if(this.canFinish) {
+            this._level++;
+            this.scene.pause();
+            localStorage.setItem("MechanicMiniGame", JSON.stringify(this._level));
+            this.scene.launch(Constants.POPUP.POPUP, {
+                key: Constants.GAMES.MECHANIC,
+                level: this._level,
+                state: Constants.STATES.NEXTLEVEL
+            })
+        }
     }
 
     getRandomCarKey() {
@@ -277,13 +301,19 @@ class MechanicMiniGame extends Phaser.Scene {
         if(numberArr[index] > 9){
             numberArr[index] = 0;
         }
+        // numberArr[k] is used to decide whether car k goes left or right
+    }
+
+    randomSpeed() {
+        var random = Math.floor(Math.random()*this.carSpeeds.length);
+        return this.carSpeeds[random];
     }
 
     deplaceCarRight(car){
-        car.x += this._CarSpeed;
+        car.x += this.randomSpeed();
     }
     deplaceCarLeft(car){
-        car.x -= this._CarSpeed;
+        car.x -= this.randomSpeed();
 
     }
 

@@ -9,7 +9,6 @@ class CreditsMenu extends Phaser.Scene{
         this.yOffset = 40;
     }
 
-    //Loading files
     preload ()
     {
         this.load.image('menu', './assets/MenuAssets/mmbg.png');
@@ -63,13 +62,4 @@ class CreditsMenu extends Phaser.Scene{
         button.scaleX = 1;
         button.scaleY= 1;
     }
-
-
-
-    // Main Loop
-    update (delta)
-    {
-    }
-
-
 }

@@ -11,8 +11,6 @@ class MenuMusic extends Phaser.Scene{
         this.isPlaying = false;
     }
 
-
-    //Loading files
     preload ()
     {
         this.load.audio('bgMusic', [

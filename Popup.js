@@ -1,7 +1,5 @@
 class Popup extends Phaser.Scene{
 
-    //Expect music, volume, caller ID/key,
-
     constructor(){
         super({key: Constants.POPUP.POPUP})
     }
@@ -45,10 +43,8 @@ class Popup extends Phaser.Scene{
     }
 
     create(){
-
         this.cam = this.cameras.main;
         this.scene.stop(Constants.MUSIC.MAINGAMEMUSIC);
-
 
         this.canvasWidth = this.game.canvas.width;
         this.canvasHeight = this.game.canvas.height;
@@ -57,8 +53,6 @@ class Popup extends Phaser.Scene{
         this.scene.setVisible(true);
         this.add.image(this.canvasWidth / 2, this.canvasHeight/2, 'popup');
         this.showLevel = this.level - 1;
-
-
 
         switch(this.caller){
             // HELP MENU
@@ -81,7 +75,8 @@ class Popup extends Phaser.Scene{
                 // START OF GAME
                 else if(this.state === Constants.STATES.WELCOME){
                     this.showShips();
-                    this.createPlayButton();
+                    this.createChooseShipText();
+                    this.createWelcomePlayButton();
                 }else{
                     let gameName = '';
                     let gameID = '';
@@ -175,7 +170,7 @@ class Popup extends Phaser.Scene{
         this.retryButton = this.add.text(this.canvasWidth / 2 - 260, this.canvasHeight / 2-100, 'Do you want to\nstart the '+ name+ '\nminigame?\n\n\n' +
             "Your level: " + level, {
             fontFamily: 'arc',
-            color: "#ff0000",
+            color: "#000000",
             fontSize: "28px"
         });
     }
@@ -289,6 +284,14 @@ class Popup extends Phaser.Scene{
         });
     }
 
+    createChooseShipText(){
+        this.add.text(125, this.canvasHeight / 2 - 100, 'Choose your ship: ', {
+            fontFamily: 'arc',
+            color: "#000000",
+            fontSize: "32px"
+        });
+    }
+
     createMainGameExitButton(){
         this.exitButton = this.add.text(125, this.canvasHeight / 2 + 150, 'Exit\nGame', {
             fontFamily: 'arc',
@@ -299,6 +302,9 @@ class Popup extends Phaser.Scene{
         this.exitButton.on("pointerdown", () => {
             this.close();
             this.stopMainGameMusic();
+            for(var i = 0; i < this.scene.manager.scenes.length; i++){
+                this.scene.stop(this.scene.manager.scenes[i]);
+            }
             this.scene.start(Constants.MAINMENU.MAINMENU,{music: this.music, volume: this.volume});
         });
         this.exitButton.on('pointerover', () => {
@@ -359,12 +365,25 @@ class Popup extends Phaser.Scene{
         this.playButton = this.add.image(500, 475, 'play');
         this.playButton.setInteractive();
         this.playButton.on('pointerdown', () => {
-            this.cam.flash(1000);
             this.scene.stop();
             this.scene.launch(this.toResume,{level: this.level, music: this.music, volume: this.volume, ship: this.ship});
+
         });
         this.playButton.on("pointerover", ()=> { this.buttonHoverState(this.playButton)});
         this.playButton.on('pointerout', () => this.buttonRestState(this.playButton));
+    }
+
+    createWelcomePlayButton(){
+        this.playButton = this.add.image(500, 475, 'play');
+        this.playButton.setInteractive();
+        this.playButton.on('pointerdown', () => {
+            this.scene.stop();
+            this.scene.launch(this.toResume,{level: this.level, music: this.music, volume: this.volume, ship: this.ship});
+            this.resetShipArray(null);
+        });
+        this.playButton.on("pointerover", ()=> { this.buttonHoverState(this.playButton)});
+        this.playButton.on('pointerout', () => this.buttonRestState(this.playButton));
+
     }
 
     createGameOverText(){
@@ -394,7 +413,7 @@ class Popup extends Phaser.Scene{
     }
 
     createScoreText(){
-        this.add.text(this.canvasWidth / 2 - 100, this.canvasHeight / 2 - 60, 'Score: ' + this.scoreAmount, {
+        this.add.text(this.canvasWidth / 2 - 260, this.canvasHeight / 2 + 100, 'Score: ' + this.scoreAmount, {
             fontFamily: 'arc',
             color: "#000000",
             fontSize: "32px"
@@ -494,6 +513,7 @@ class Popup extends Phaser.Scene{
     }
 
     showShips(){
+
         let shipY = 320;
         let shipYOffset = 70;
         let shipXStart = 170;
@@ -508,14 +528,13 @@ class Popup extends Phaser.Scene{
             this.add.image(shipXStart+8, shipY+shipYOffset, 'ship6')
         ];
 
-        console.log("Main GAme Active Status: " + this.scene.isActive(Constants.MAINGAME.MAINGAME));
 
-        //this.sh1 = this.add.image(shipXStart, shipY, 'ship1');
         this.ships[0].alpha = 0.5;
         this.ships[0].setInteractive();
         this.ships[0].setScale(0.8);
         this.ships[0].on('pointerdown', () => {
             this.ship = 1;
+
             this.scene.get(Constants.MAINGAME.MAINGAME).setShip(this.ship);
             // Redundancy for security
             localStorage.setItem('ship', JSON.stringify(this.ship));
@@ -527,7 +546,7 @@ class Popup extends Phaser.Scene{
         this.ships[0].on('pointerover', () => this.shipHoverState(this.ships[0]));
         this.ships[0].on('pointerout', () => this.shipRestState(this.ships[0], this.shipArr[0]));
 
-        //this.sh2 = this.add.image(shipXStart+shipXOffset, shipY, 'ship2');
+
         this.ships[1].setInteractive();
         this.ships[1].alpha = 0.5;
         this.ships[1].setScale(0.8);
@@ -544,7 +563,6 @@ class Popup extends Phaser.Scene{
         this.ships[1].on('pointerover', () => this.shipHoverState(this.ships[1]));
         this.ships[1].on('pointerout', () => this.shipRestState(this.ships[1], this.shipArr[1]));
 
-        //this.sh3 = this.add.image(shipXStart+2*shipXOffset, shipY, 'ship3');
         this.ships[2].setInteractive();
         this.ships[2].alpha = 0.5;
         this.ships[2].setScale(0.8);
@@ -561,7 +579,6 @@ class Popup extends Phaser.Scene{
         this.ships[2].on('pointerover', () => this.shipHoverState(this.ships[2]));
         this.ships[2].on('pointerout', () => this.shipRestState(this.ships[2], this.shipArr[2]));
 
-        //this.sh4 = this.add.image(shipXStart+3*shipXOffset, shipY, 'ship4');
         this.ships[3].setInteractive();
         this.ships[3].alpha = 0.5;
         this.ships[3].setScale(0.8);
@@ -578,7 +595,6 @@ class Popup extends Phaser.Scene{
         this.ships[3].on('pointerover', () => this.shipHoverState(this.ships[3]));
         this.ships[3].on('pointerout', () => this.shipRestState(this.ships[3], this.shipArr[3]));
 
-        //this.sh5 = this.add.image(shipXStart+4*shipXOffset, shipY, 'ship5');
         this.ships[4].setInteractive();
         this.ships[4].alpha = 0.5;
         this.ships[4].setScale(0.8);
@@ -595,7 +611,6 @@ class Popup extends Phaser.Scene{
         this.ships[4].on('pointerover', () => this.shipHoverState(this.ships[4]));
         this.ships[4].on('pointerout', () => this.shipRestState(this.ships[4], this.shipArr[4]));
 
-        //this.ships[5] = this.add.image(shipXStart+8, shipY+shipYOffset, 'ship6');
         this.ships[5].setInteractive();
         this.ships[5].alpha = 0.5;
         this.ships[5].setScale(0.8);
@@ -626,16 +641,19 @@ class Popup extends Phaser.Scene{
         text.scaleY= 1.05;
         text.setText("[Exit]");
     }
+
     exitRestState(text) {
         text.scaleX = 1;
         text.scaleY= 1;
         text.setText("Exit");
 
     }
+
     buttonHoverState(button) {
         button.scaleX = 1.1;
         button.scaleY= 1.1;
     }
+
     buttonRestState(button) {
         button.scaleX = 1;
         button.scaleY= 1;
@@ -646,6 +664,7 @@ class Popup extends Phaser.Scene{
         text.scaleY= 1.05;
         text.setText("[Continue]");
     }
+
     continueRestState(text) {
         text.scaleX = 1;
         text.scaleY= 1;
@@ -656,6 +675,7 @@ class Popup extends Phaser.Scene{
     shipHoverState(ship) {
         ship.alpha = 1;
     }
+
     shipRestState(ship, chosen) {
         if(!chosen){
             ship.alpha = 0.5;
@@ -663,17 +683,19 @@ class Popup extends Phaser.Scene{
     }
 
     resetShipArray(chosen){
-        for(let i = 0; i < this.shipArr.length; i++) {
-            if((i + 1) !== chosen){
+        if(chosen !== null) {
+            for (let i = 0; i < this.shipArr.length; i++) {
+                if ((i + 1) !== chosen) {
+                    this.shipArr[i] = false;
+                } else {
+                    this.shipArr[i] = true;
+                }
+            }
+        }else {
+            for (let i = 0; i < this.shipArr.length; i++) {
                 this.shipArr[i] = false;
-            }else{
-                this.shipArr[i] = true;
             }
         }
-    }
-
-    chosenShipReset(){
-
     }
 
     stopMainGameMusic(){
@@ -693,8 +715,5 @@ class Popup extends Phaser.Scene{
     close(){
         this.scene.stop();
         this.scene.stop(this.toResume);
-    }
-
-    update(data){
     }
 }

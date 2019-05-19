@@ -9,15 +9,6 @@ class Food_S extends Phaser.Physics.Arcade.Image {
         this.shown = true;
     }
 
-    /*setSpeed(speed){
-        this.speed = speed;
-    }*/
-
-    /*
-    food1a.setCircle(30, 8, 8);
-            food1a.body.allowGravity = false;
-     */
-
     update(time,delta) {
         this.y += this.speed;
     }

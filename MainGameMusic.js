@@ -13,7 +13,7 @@ class MainGameMusic extends Phaser.Scene{
     }
 
 
-    //Loading files
+    // Loading files
     preload ()
     {
         this.load.audio('gravity', [

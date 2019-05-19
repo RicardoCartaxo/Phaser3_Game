@@ -21,7 +21,6 @@ class PlayMenu extends Phaser.Scene{
 
     create ()
     {
-        console.log("Play Menu Music: " + this.music);
         this.bg = this.add.image(400,300, 'menu');
 
         // New Game, hence we clear the storage
@@ -80,13 +79,4 @@ class PlayMenu extends Phaser.Scene{
         button.scaleX = 1;
         button.scaleY= 1;
     }
-
-
-
-    // Main Loop
-    update (delta)
-    {
-    }
-
-
 }

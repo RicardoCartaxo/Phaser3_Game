@@ -17,11 +17,13 @@ class MainGame extends Phaser.Scene{
 
     preload ()
     {
-        // LOADING SHIPS
-        for(var k = 1; k <= this.numberOfShips; k++){
-            let path = "ship"+k;
-            this.load.image(path, './assets/PlayerAssets/' + path + '.png');
-        }
+
+        this.load.image('ship1', './assets/PlayerAssets/ship1.png');
+        this.load.image('ship2', './assets/PlayerAssets/ship2.png');
+        this.load.image('ship3', './assets/PlayerAssets/ship3.png');
+        this.load.image('ship4', './assets/PlayerAssets/ship4.png');
+        this.load.image('ship5', './assets/PlayerAssets/ship5.png');
+        this.load.image('ship6', './assets/PlayerAssets/ship6.png');
 
         // LOADING MAP FILES
         this.load.image('roguelikeCity_magenta', './assets/Maps/ASSETS/Spritesheet/roguelikeCity_magenta.png');
@@ -75,7 +77,6 @@ class MainGame extends Phaser.Scene{
 
         // ADDING PLAYER (IMAGE)
         let path = 'ship'+this.shipChosen;
-        console.log("path: " + path);
         this.player = this.physics.add.sprite(100, 450, path);
         this.player.setScale(1);
         this.playerSpeed = 5;
@@ -140,8 +141,8 @@ class MainGame extends Phaser.Scene{
             this.resetPlayerVelocity();
         }
 
-        //this.cam.flash(800,20,20,100);
-        //this.cam.zoomTo(500);
+        // this.cam.flash(800,20,20,100);
+        // this.cam.zoomTo(500);
     }
 
     resetPlayerVelocity(){
@@ -165,21 +166,42 @@ class MainGame extends Phaser.Scene{
         this.enterBPGameText = this.add.text(130, 700, "Press E to enter DEQ\nmini game",{
             fontFamily: 'arc',
             color: "#a61eff",
-            fontSize: "16px"
+            fontSize: "16px",
+            shadow: {
+                offsetX: 1,
+                color: '#000000',
+                blur: 0,
+                stroke: true,
+                fill: true
+            }
         });
         this.enterBPGameText.alpha = 0;
 
         this.enterFFGameText = this.add.text(1700, 400, "Press E to enter FoodFight\nmini game", {
             fontFamily: 'arc',
             color: "#6acbff",
-            fontSize: "16px"
+            fontSize: "16px",
+            shadow: {
+                offsetX: 1,
+                color: '#000000',
+                blur: 0,
+                stroke: true,
+                fill: true
+            }
         });
         this.enterFFGameText.alpha = 0;
 
         this.enterMECGameText = this.add.text(2375, 1000, "Press E to enter DEM\nmini game", {
             fontFamily: 'arc',
             color: "#ffb000",
-            fontSize: "16px"
+            fontSize: "16px",
+            shadow: {
+                offsetX: 1,
+                color: '#000000',
+                blur: 0,
+                stroke: true,
+                fill: true
+            }
         });
         this.enterMECGameText.alpha = 0;
     }

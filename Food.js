@@ -4,10 +4,6 @@ class Food extends Phaser.GameObjects.Image {
         //this.speed = speed;
         this.key = key;
     }
-    /*
-    setSpeed(speed){
-        this.speed = speed;
-    }*/
 
     update(time,delta) {
         this.y += this.speed;
