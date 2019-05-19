@@ -16,9 +16,9 @@ class Popup extends Phaser.Scene{
         this.level = data.level;
         this.page = data.page;
         this.ship = 0;
-        this.BPLvl = parseInt(data.BPLvl,10) || data.BPLvl || 1;
-        this.FFLvl = parseInt(data.FFLvl,10) || data.FFLvl || 1;
-        this.MECLvl = parseInt(data.MECLvl,10) || data.MECLvl || 1
+        this.BPLvl = localStorage.getItem('BubblePopperMiniGame') || data.BPLvl || 1;
+        this.FFLvl = localStorage.getItem('FoodFightMiniGame') || data.FFLvl || 1;
+        this.MECLvl = localStorage.getItem('MechanicMiniGame') || data.MECLvl || 1
     }
 
     preload(){
@@ -47,6 +47,8 @@ class Popup extends Phaser.Scene{
     create(){
 
         this.cam = this.cameras.main;
+        this.scene.stop(Constants.MUSIC.MAINGAMEMUSIC);
+
 
         this.canvasWidth = this.game.canvas.width;
         this.canvasHeight = this.game.canvas.height;
@@ -55,6 +57,8 @@ class Popup extends Phaser.Scene{
         this.scene.setVisible(true);
         this.add.image(this.canvasWidth / 2, this.canvasHeight/2, 'popup');
         this.showLevel = this.level - 1;
+
+
 
         switch(this.caller){
             // HELP MENU
@@ -80,21 +84,25 @@ class Popup extends Phaser.Scene{
                     this.createPlayButton();
                 }else{
                     let gameName = '';
+                    let gameID = '';
                     switch(this.state){
                         case Constants.STATES.BPPOSITION:
                             gameName = "DEQ";
+                            gameID = "BubblePopperMiniGame";
                             toStart = Constants.GAMES.BUBBLEPOPPER;
                             break;
                         case Constants.STATES.FFPOSITION:
                             gameName = "FoodFight";
+                            gameID = "FoodFightMiniGame";
                             toStart = Constants.GAMES.FOODFIGHT;
                             break;
                         case Constants.STATES.MECPOSITION:
                             gameName = "DEM";
+                            gameID = "MechanicMiniGame";
                             toStart = Constants.GAMES.MECHANIC;
                             break;
                     }
-                    this.createPlayMiniGameText(gameName);
+                    this.createPlayMiniGameText(gameName, gameID);
                     this.createYesButton(toStart);
                     this.createNoButton(this.toResume);
 
@@ -105,6 +113,7 @@ class Popup extends Phaser.Scene{
             case Constants.GAMES.FOODFIGHT:
                 this.toResume = Constants.GAMES.FOODFIGHT;
                 if(this.state === Constants.STATES.PAUSE) {
+                    this.createPausedText();
                     this.createScoreText();
                     this.createResumeButton();
                     this.createExitButton();
@@ -122,8 +131,10 @@ class Popup extends Phaser.Scene{
             case Constants.GAMES.MECHANIC:
                 this.toResume = Constants.GAMES.MECHANIC;
                 if(this.state === Constants.STATES.PAUSE){
+                    this.createPausedText();
                     this.createResumeButton();
                     this.createExitButton();
+                    this.createPausedText();
                 }else if(this.state === Constants.STATES.NEXTLEVEL){
                     this.createLevelPassedText();
                     this.createNextButton();
@@ -144,6 +155,7 @@ class Popup extends Phaser.Scene{
                     this.createNextButton();
                     this.createExitButton();
                 }else if(this.state === Constants.STATES.PAUSE){
+                    this.createPausedText();
                     this.createScoreText();
                     this.createResumeButton();
                     this.createExitButton();
@@ -157,8 +169,8 @@ class Popup extends Phaser.Scene{
         }
     }
 
-    createPlayMiniGameText(name){
-        let level = localStorage.getItem(JSON.stringify(name)) || 1;
+    createPlayMiniGameText(name, id){
+        let level = localStorage.getItem(id) || 1;
 
         this.retryButton = this.add.text(this.canvasWidth / 2 - 260, this.canvasHeight / 2-100, 'Do you want to\nstart the '+ name+ '\nminigame?\n\n\n' +
             "Your level: " + level, {
@@ -166,6 +178,15 @@ class Popup extends Phaser.Scene{
             color: "#ff0000",
             fontSize: "28px"
         });
+    }
+
+    createPausedText(){
+        this.add.text(123, this.canvasHeight / 2 - 125, 'Game\nPaused', {
+            fontFamily: 'arc',
+            color: "#000000",
+            fontSize: "96px",
+            align: 'center'
+        })
     }
 
     createYesButton(toStart){
@@ -269,7 +290,7 @@ class Popup extends Phaser.Scene{
     }
 
     createMainGameExitButton(){
-        this.exitButton = this.add.text(this.canvasWidth / 2 - 250, this.canvasHeight / 2 + 175, 'Exit\nGame', {
+        this.exitButton = this.add.text(125, this.canvasHeight / 2 + 150, 'Exit\nGame', {
             fontFamily: 'arc',
             color: "#ff0000",
             fontSize: "32px"
@@ -280,8 +301,14 @@ class Popup extends Phaser.Scene{
             this.stopMainGameMusic();
             this.scene.start(Constants.MAINMENU.MAINMENU,{music: this.music, volume: this.volume});
         });
-        this.exitButton.on('pointerover', () => this.exitHoverState(this.exitButton));
-        this.exitButton.on('pointerout', () => this.exitRestState(this.exitButton));
+        this.exitButton.on('pointerover', () => {
+            this.exitButton.setScale(1.1);
+            this.exitButton.setText("[Exit\nGame]");
+        });
+        this.exitButton.on('pointerout', () => {
+            this.exitButton.setScale(1.0);
+            this.exitButton.setText("Exit\nGame");
+        });
     }
 
     createExitButton(){
@@ -345,6 +372,11 @@ class Popup extends Phaser.Scene{
             fontFamily: 'arc',
             color: "#ff0000",
             fontSize: "32px"
+        });
+        this.add.text(this.canvasWidth / 2 - 200, this.canvasHeight / 2 , ':(', {
+            fontFamily: 'arc',
+            color: "#ff0000",
+            fontSize: "128px"
         });
     }
 

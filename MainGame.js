@@ -30,27 +30,22 @@ class MainGame extends Phaser.Scene{
 
     }
 
-    resetPlayerVelocity(){
-        this.player.setVelocityX(0);
-        this.player.setVelocityY(0);
-    }
-
 
 
     create ()
     {
+        // RESET PLAYER VELOCITY
         this.events.on("resume", ()=>{
             this.resetPlayerVelocity();
+            this.activateEKey();
         });
 
-        console.log("main game create called");
-
+        // STOP MINI GAME MUSIC IF RUNNING
         this.scene.stop(Constants.MUSIC.GAMESMUSIC);
         this.callMusic();
 
         // MAIN CAMERA
         this.cam = this.cameras.main;
-
 
         // PAUSING
         this.input.keyboard.on('keyup', function (e){
@@ -59,14 +54,10 @@ class MainGame extends Phaser.Scene{
             }
         },this);
 
-        this.events.on("resume", (data)=>{
-            this.activateKeyboard();
-        });
-
 
         // MAP JSON INFO
         this.map = this.add.tilemap('polo2');
-        // MAP IMAGE SETS
+        // MAP TILE IMAGE SETS
         let rogueCity = this.map.addTilesetImage('roguelikeCity_magenta');
         let dungeon = this.map.addTilesetImage('Dungeon Tileset');
         // MAP LAYERS
@@ -94,7 +85,7 @@ class MainGame extends Phaser.Scene{
 
         // KEYBOARD KEYS
         this.enableKeyboard();
-        this.activateKeyboard();
+        this.activateEKey();
 
         // MINI GAMES TEXT
         this.addText();
@@ -136,8 +127,26 @@ class MainGame extends Phaser.Scene{
             this.resetPlayerVelocity();
         }
 
+        // Added custom class getVelocityX and getVelocityY to phaser.js, line 117752
+        if(this.player.getVelocityX() < 0 && (!this.key_A.isDown && !this.key_Left.isDown)){
+            this.resetPlayerVelocity();
+        }
+        else if(this.player.getVelocityX() > 0 && (!this.key_D.isDown && !this.key_Right.isDown)){
+            this.resetPlayerVelocity();
+        }
+        if((this.player.getVelocityY() < 0 && (!this.key_W.isDown && !this.key_Up.isDown))){
+            this.resetPlayerVelocity();
+        }else if(this.player.getVelocityY() > 0 && (!this.key_S.isDown && !this.key_Down.isDown)){
+            this.resetPlayerVelocity();
+        }
+
         //this.cam.flash(800,20,20,100);
         //this.cam.zoomTo(500);
+    }
+
+    resetPlayerVelocity(){
+        this.player.setVelocityX(0);
+        this.player.setVelocityY(0);
     }
 
     enableKeyboard(){
@@ -181,34 +190,30 @@ class MainGame extends Phaser.Scene{
         this.enterMECGameText.alpha = 0;
     }
 
-    activateKeyboard(){
+    activateEKey(){
         this.input.keyboard.on('keyup', function (e){
             if(e.key === "e" || e.key === "E"){
                 if(this.enterBPGameText.alpha === 1){
                     this.scene.pause();
-                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.BPPOSITION})
+                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.BPPOSITION, BPLvl: this.bubblePopperLvl})
 
                 }
                 else if(this.enterFFGameText.alpha === 1){
                     this.scene.pause();
-                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.FFPOSITION})
+                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.FFPOSITION, FFLvl: this.bubblePopperLvl})
 
                 }
                 else if(this.enterMECGameText.alpha === 1){
                     this.scene.pause();
-                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.MECPOSITION})
+                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.MECPOSITION, MECLvl: this.mechanicLvl})
                 }
             }
         },this);
     }
 
-    deactivateKeyboard(){
+    deactivateEKey(){
         this.input.keyboard.on('keyup', function (e){
-            if(e.key === "1"){}},this);
-        this.input.keyboard.on('keyup', function (e){
-            if(e.key === "2"){}},this);
-        this.input.keyboard.on('keyup', function (e){
-            if(e.key === "3"){}},this);
+            if(e.key === "e" || e.key === "E"){}},this);
     }
 
     getLevel(key){
@@ -236,6 +241,7 @@ class MainGame extends Phaser.Scene{
 
     pauseGame(){
         this.scene.pause();
+        this.deactivateEKey();
         this.scene.launch(Constants.POPUP.POPUP, {BPLvl: this.bubblePopperLvl, FFLvl: this.foodFightLvl, MECLvl: this.mechanicLvl,
             key: Constants.MAINGAME.MAINGAME,volume: this.volume, music: this.music,
             score: this._score, state: Constants.STATES.PAUSE})
@@ -265,7 +271,6 @@ class MainGame extends Phaser.Scene{
         }
     }
 
-
     moveRight(){
         if(this.player.x < this.map.widthInPixels)
             this.player.x = this.player.x +this.playerSpeed;
@@ -284,8 +289,7 @@ class MainGame extends Phaser.Scene{
         this.controlPosition();
     }
     moveDown(){
-        if(this.player.y < this.map.heightInPixels);
-        {
+        if(this.player.y < this.map.heightInPixels);{
             this.player.y = this.player.y + this.playerSpeed;
         }
         this.controlPosition();
