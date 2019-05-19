@@ -63,6 +63,7 @@ class Popup extends Phaser.Scene{
             // MAIN GAME
             case Constants.MAINGAME.MAINGAME:
                 this.toResume = Constants.MAINGAME.MAINGAME;
+                let toStart;
                 //PAUSE
                 if(this.state === Constants.STATES.PAUSE) {
                     this.createResumeButton();
@@ -74,6 +75,27 @@ class Popup extends Phaser.Scene{
                 else if(this.state === Constants.STATES.WELCOME){
                     this.showShips();
                     this.createPlayButton();
+                }else{
+                    let gameName = '';
+                    switch(this.state){
+                        case Constants.STATES.BPPOSITION:
+                            gameName = "DEQ";
+                            toStart = Constants.GAMES.BUBBLEPOPPER;
+                            break;
+                        case Constants.STATES.FFPOSITION:
+                            gameName = "FoodFight";
+                            toStart = Constants.GAMES.FOODFIGHT;
+                            break;
+                        case Constants.STATES.MECPOSITION:
+                            gameName = "DEM";
+                            toStart = Constants.GAMES.MECHANIC;
+                            break;
+                    }
+                    this.createPlayMiniGameText(gameName);
+                    this.createYesButton(toStart);
+                    // resume main game this.toResume
+                    this.createNoButton(this.toResume);
+
                 }
                 break;
 
@@ -131,6 +153,63 @@ class Popup extends Phaser.Scene{
                 }
                 break;
         }
+    }
+
+    createPlayMiniGameText(name){
+        let level = localStorage.getItem(JSON.stringify(name)) || 1;
+
+        this.retryButton = this.add.text(this.canvasWidth / 2 - 260, this.canvasHeight / 2-100, 'Do you want to\nstart the '+ name+ '\nminigame?\n\n\n' +
+            "Your level: " + level, {
+            fontFamily: 'arc',
+            color: "#ff0000",
+            fontSize: "28px"
+        });
+    }
+
+    createYesButton(toStart){
+        this.yesButton = this.add.text(475, this.canvasHeight / 2 + 175, "Yes", {
+            fontFamily: 'arc',
+            color: "#00ff00",
+            fontSize: "28px"
+        });
+        this.yesButton.setInteractive();
+        this.yesButton.on('pointerover', () => {
+            this.yesButton.setScale(1.1);
+            this.yesButton.setText("[Yes]");
+        });
+        this.yesButton.on('pointerout', () => {
+            this.yesButton.setScale(1.0);
+            this.yesButton.setText("Yes");
+        });
+        this.yesButton.on('pointerdown', () => {
+            this.close();
+            this.stopMainGameMusic();
+            this.scene.start(toStart, {music: this.music, volume: this.volume})
+        });
+    }
+
+    createNoButton(toResume){
+        console.log(toResume);
+        console.log(Constants.MAINGAME.MAINGAME);
+        this.noButton = this.add.text(this.canvasWidth / 2 - 260, this.canvasHeight / 2 + 175, "No", {
+            fontFamily: 'arc',
+            color: "#ff0000",
+            fontSize: "28px"
+        });
+        this.noButton.setInteractive();
+        this.noButton.on('pointerover', () => {
+            this.noButton.setScale(1.1);
+            this.noButton.setText("[No]");
+        });
+        this.noButton.on('pointerout', () => {
+            this.noButton.setScale(1.0);
+            this.noButton.setText("No");
+        });
+        this.noButton.on('pointerdown', () => {
+            this.scene.stop();
+            this.scene.resume(Constants.MAINGAME.MAINGAME, {music: this.music, volume: this.volume});
+
+        });
     }
 
     createMinigameList(){

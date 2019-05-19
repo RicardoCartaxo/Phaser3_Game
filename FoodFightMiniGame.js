@@ -180,7 +180,7 @@ class FoodFightMiniGame extends Phaser.Scene {
         //If player touches a food item then we call the function hitFood()
         this.physics.add.overlap(this.player, this.foods, this.hitFood, null, this);
 
-        this.cam.flash(500);d
+        this.cam.flash(500);
     }
 
     //When player hits a food item, we disable the foodItem body and increment score

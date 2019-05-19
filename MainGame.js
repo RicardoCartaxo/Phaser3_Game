@@ -12,10 +12,9 @@ class MainGame extends Phaser.Scene{
         this.mechanicLvl = localStorage.getItem("MechanicMiniGame") || 1;
         this.shipChosen = parseInt(localStorage.getItem('ship'), 10)|| 1;
         this.scene.stop(Constants.MUSIC.GAMESMUSIC);
-
-        console.log("natural: " + localStorage.getItem('ship'));
-        console.log("parsed: " + parseInt(localStorage.getItem('ship'), 10));
     }
+
+
 
 
     preload ()
@@ -38,6 +37,11 @@ class MainGame extends Phaser.Scene{
 
     create ()
     {
+
+        console.log("main game create called");
+        // If we enter Minigame area we make it false
+        // Use timer to turn it to true again after a while
+        this.enterMiniGames = true;
 
         this.scene.stop(Constants.MUSIC.GAMESMUSIC);
         this.callMusic();
@@ -95,6 +99,7 @@ class MainGame extends Phaser.Scene{
         this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.key_E = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
         this.key_Left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.key_Right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.key_Down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
@@ -107,36 +112,83 @@ class MainGame extends Phaser.Scene{
 
         this.activateKeyboard();
 
+        this.enterBPGameText = this.add.text(120, 700, "Press E to enter DEQ mini game",{
+            fontFamily: 'arc',
+                color: "#a61eff",
+            fontSize: "16px"
+        });
+        this.enterBPGameText.alpha = 0;
+
+        this.enterFFGameText = this.add.text(1720, 400, "Press E to enter FoodFight mini game", {
+            fontFamily: 'arc',
+            color: "#6acbff",
+            fontSize: "16px"
+        });
+        this.enterFFGameText.alpha = 0;
+
+        this.enterMECGameText = this.add.text(2450, 1060, "Press E to enter DEM mini game", {
+            fontFamily: 'arc',
+            color: "#ffb000",
+            fontSize: "16px"
+        });
+        this.enterMECGameText.alpha = 0;
+
+
         this.cam.flash(500);
 
     }
 
-    activateKeyboard(){
-        /*
-        this.input.keyboard.on('keyup', function (e){
-            if(e.key === "1"){
-                this.scene.pause();
-                console.log("MainGame starts mechanic: " + this.mechanicLvl);
-                this.deactivateKeyboard();
-                this.scene.launch("MechanicMiniGame", { level: this.mechanicLvl, volume: this.volume, music: this.music});
-            }
-        },this);
-        this.input.keyboard.on('keyup', function (e){
-            if(e.key === "2"){
-                this.scene.pause();
-                this.deactivateKeyboard();
-                this.scene.launch("FoodFightMiniGame", { level: this.foodFightLvl, volume: this.volume, music: this.music});
-            }
-        },this);
-        this.input.keyboard.on('keyup', function (e){
-            if(e.key === "3"){
-                this.scene.pause();
-                this.deactivateKeyboard();
-                this.scene.launch("BubblePopperMiniGame",{ level: this.bubblePopperLvl, volume: this.volume, music: this.music});
-            }
-        },this);
-        */
+    resetText(){
+        this.enterBPGameText.alpha = 0;
+        this.enterFFGameText.alpha = 0;
+        this.enterMECGameText.alpha = 0;
     }
+
+    activateKeyboard(){
+
+        this.input.keyboard.on('keyup', function (e){
+            if(e.key === "e" || e.key === "E"){
+                if(this.enterBPGameText.alpha === 1){
+                    this.scene.pause();
+                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.BPPOSITION})
+                }
+                else if(this.enterFFGameText.alpha === 1){
+                    this.scene.pause();
+                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.FFPOSITION})
+                }
+                else if(this.enterMECGameText.alpha === 1){
+                    this.scene.pause();
+                    this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.MECPOSITION})
+                }
+            }
+        },this);
+    }
+
+    canStartMiniGame(x, y){
+        if(x >= 100 && x <= 130){
+            if(y >= 680 && y <= 715 ){
+
+            }
+        }else if(x >= 1705 && x <= 1730){
+            if(y >= 385 && y <= 420){
+
+            }
+        }else if(x >= 2440 && x <= 2470){
+            if(y >= 1020 && y <= 1080) {
+                console.log(this.enterMECGameText);
+                this.enterMECGameText.setVisible(true);
+                /*
+                console.log("MEC");
+                this.scene.pause();
+                this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.MECPOSITION})
+                */
+            }
+        }else{
+            this.resetText();
+        }
+
+    }
+
 
     deactivateKeyboard(){
         this.input.keyboard.on('keyup', function (e){
@@ -231,7 +283,11 @@ class MainGame extends Phaser.Scene{
             }
             this.moveDown();
         }
-
+        /*
+        if((this.player.velocity.x > 0  || this.player.velocity.x) && (!this.key_D.isDown) && (!this.key_D.isDown)){
+            this.player.velocity
+        }
+        */
         //this.cam.flash(800,20,20,100);
         //this.cam.zoomTo(500);
 
@@ -265,23 +321,34 @@ class MainGame extends Phaser.Scene{
         let yPos = this.player.y;
         let xPos = this.player.x;
         if(xPos >= 100 && xPos <= 130){
-            if(yPos >= 680 && yPos <= 715){
-                console.log("BP");
-                this.scene.pause();
-                this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.BPPOSITION})
+            if(yPos >= 680 && yPos <= 715 ){
+                console.log(this.enterBPGameText);
+                this.enterBPGameText.alpha = 1;
+                /* console.log("BP");
+
+                */
             }
-        }else if(xPos >= 1705 && xPos <= 1820){
-            if(yPos >= 385 && yPos <= 445){
+        }else if(xPos >= 1705 && xPos <= 1730){
+            if(yPos >= 385 && yPos <= 420){
+                console.log(this.enterFFGameText);
+                this.enterFFGameText.alpha = 1;
+                /*
                 console.log("FF");
-                this.scene.pause();
-                this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.FFPOSITION})
+
+                */
             }
-        }else if(xPos >= 2440 && xPos <= 2540){
+        }else if(xPos >= 2440 && xPos <= 2470){
+
             if(yPos >= 1020 && yPos <= 1080) {
+                console.log(this.enterMECGameText);
+                this.enterMECGameText.alpha = 1;
+                /*
                 console.log("MEC");
-                this.scene.pause();
-                this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.MECPOSITION})
+
+                */
             }
+        }else{
+            this.resetText();
         }
     }
 }
