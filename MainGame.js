@@ -148,19 +148,16 @@ class MainGame extends Phaser.Scene{
         this.input.keyboard.on('keyup', function (e){
             if(e.key === "e" || e.key === "E"){
                 if(this.enterBPGameText.alpha === 1){
-                    this.input.keyboard.enabled = false;
                     this.scene.pause();
                     this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.BPPOSITION})
 
                 }
                 else if(this.enterFFGameText.alpha === 1){
-                    this.input.keyboard.enabled = false;
                     this.scene.pause();
                     this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.FFPOSITION})
 
                 }
                 else if(this.enterMECGameText.alpha === 1){
-                    this.input.keyboard.enabled = false;
                     this.scene.pause();
                     this.scene.launch(Constants.POPUP.POPUP, {key: Constants.MAINGAME.MAINGAME, music: this.music, volume: this.volume, state: Constants.STATES.MECPOSITION})
                 }
@@ -299,18 +296,15 @@ class MainGame extends Phaser.Scene{
         let xPos = this.player.x;
         if(xPos >= 100 && xPos <= 130){
             if(yPos >= 680 && yPos <= 715 ){
-                console.log(this.enterBPGameText);
                 this.enterBPGameText.alpha = 1;
             }
         }else if(xPos >= 1705 && xPos <= 1730){
             if(yPos >= 385 && yPos <= 420){
-                console.log(this.enterFFGameText);
                 this.enterFFGameText.alpha = 1;
             }
         }else if(xPos >= 2440 && xPos <= 2470){
 
             if(yPos >= 1020 && yPos <= 1080) {
-                console.log(this.enterMECGameText);
                 this.enterMECGameText.alpha = 1;
             }
         }else{
